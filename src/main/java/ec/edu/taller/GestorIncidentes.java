@@ -1,9 +1,6 @@
 package ec.edu.taller;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class GestorIncidentes {
 
@@ -11,42 +8,64 @@ public class GestorIncidentes {
     private int capacidadMaxima;
 
     public GestorIncidentes(int capacidadMaxima) {
-
-        this.colaIncidentes = null;
+        this.capacidadMaxima = capacidadMaxima;
+        this.colaIncidentes = new LinkedList<>();
     }
 
     public boolean registrarIncidente(IncidenteSeguridad incidente) {
-        // TODO: implementar validaciones y registro en cola
-        return false;
+
+        if (incidente == null || incidente.getCodigo() == null || incidente.getCodigo().trim().isEmpty()) {
+            return false;
+        }
+
+        if (colaIncidentes.size() >= capacidadMaxima) {
+            return false;
+        }
+
+        for (IncidenteSeguridad i : colaIncidentes) {
+            if (i.getCodigo().trim().equals(incidente.getCodigo().trim())) {
+                return false;
+            }
+        }
+
+        colaIncidentes.add(incidente);
+        return true;
     }
 
     public boolean existeIncidente(String codigo) {
-        // TODO: verificar si existe un incidente por código
+        if (codigo == null || codigo.trim().isEmpty()) {
+            return false;
+        }
+
+        for (IncidenteSeguridad p : colaIncidentes) {
+            if (p.getCodigo().trim().equals(codigo.trim())) {
+                return true;
+            }
+        }
         return false;
     }
 
     public IncidenteSeguridad consultarSiguienteIncidente() {
-        // TODO: consultar sin eliminar
-        return null;
+        return colaIncidentes.peek(); // no elimina
     }
 
     public IncidenteSeguridad atenderSiguienteIncidente() {
-        // TODO: eliminar el primero de la cola y cambiar estado a ATENDIDO
-        return null;
+        IncidenteSeguridad incidente = colaIncidentes.poll(); // elimina el primero
+        if (incidente != null) {
+            incidente.setEstado("ATENDIDO"); // depende de tu clase
+        }
+        return incidente;
     }
 
     public int contarIncidentesPendientes() {
-        // TODO: retornar cantidad de incidentes pendientes
-        return 0;
+        return colaIncidentes.size();
     }
 
     public int consultarEspaciosDisponibles() {
-        // TODO: retornar capacidad disponible
-        return 0;
+        return capacidadMaxima - colaIncidentes.size();
     }
 
     public List<IncidenteSeguridad> listarIncidentes() {
-        // TODO: retornar copia de los incidentes pendientes sin modificar la cola
-        return new ArrayList<>();
+        return new ArrayList<>(colaIncidentes); // copia segura
     }
 }
